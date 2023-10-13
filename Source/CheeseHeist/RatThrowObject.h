@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "RatThrowObject.generated.h"
 
-class UStaticMeshComponent;
+class USkeletalMeshComponent;
 
 UCLASS()
 class ARatThrowObject : public AActor {
@@ -19,7 +19,7 @@ public:
 	ARatThrowObject();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-	UStaticMeshComponent* Mesh;
+	USkeletalMeshComponent* Mesh;
 
 protected:
 	// Called when the game starts or when spawned
