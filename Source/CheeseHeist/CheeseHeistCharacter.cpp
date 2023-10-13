@@ -10,14 +10,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
+#include "RatThrowObject.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
 // ACheeseHeistCharacter
 
-ACheeseHeistCharacter::ACheeseHeistCharacter()
-{
+ACheeseHeistCharacter::ACheeseHeistCharacter() {
 	// Character doesnt have a rifle at start
 	bHasRifle = false;
 	
@@ -39,18 +39,17 @@ ACheeseHeistCharacter::ACheeseHeistCharacter()
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	bHasRat = true;
+
 }
 
-void ACheeseHeistCharacter::BeginPlay()
-{
+void ACheeseHeistCharacter::BeginPlay() {
 	// Call the base class  
 	Super::BeginPlay();
 
 	// Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller)) {
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())){
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
@@ -59,11 +58,9 @@ void ACheeseHeistCharacter::BeginPlay()
 
 //////////////////////////////////////////////////////////////////////////// Input
 
-void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
-	{
+	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)){
 		// Jumping
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
@@ -73,46 +70,61 @@ void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACheeseHeistCharacter::Look);
-	}
-	else
-	{
+
+		// Throw Rat
+		EnhancedInputComponent->BindAction(ThrowRatAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::ThrowRat);
+	}else {
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
 
 
-void ACheeseHeistCharacter::Move(const FInputActionValue& Value)
-{
+void ACheeseHeistCharacter::Move(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
+	if (Controller != nullptr){
 		// add movement 
 		AddMovementInput(GetActorForwardVector(), MovementVector.Y);
 		AddMovementInput(GetActorRightVector(), MovementVector.X);
 	}
 }
 
-void ACheeseHeistCharacter::Look(const FInputActionValue& Value)
-{
+void ACheeseHeistCharacter::Look(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr)
-	{
+	if (Controller != nullptr){
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
 }
 
-void ACheeseHeistCharacter::SetHasRifle(bool bNewHasRifle)
-{
+void ACheeseHeistCharacter::SetHasRifle(bool bNewHasRifle) {
 	bHasRifle = bNewHasRifle;
 }
 
-bool ACheeseHeistCharacter::GetHasRifle()
-{
+bool ACheeseHeistCharacter::GetHasRifle() {
 	return bHasRifle;
+}
+
+void ACheeseHeistCharacter::ThrowRat() {
+
+	if (bHasRat) {
+
+		FActorSpawnParameters SpawnInfo;
+		SpawnInfo.Owner = this;
+
+		ARatThrowObject* RatObject = GetWorld()->SpawnActor<ARatThrowObject>(RatThrowableObject, FirstPersonCameraComponent->GetComponentLocation() + ( FirstPersonCameraComponent->GetForwardVector() * 100), this->GetActorRotation(), SpawnInfo);
+
+		RatObject->Mesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, RatObject->GetActorLocation());
+
+		bHasRat = false;
+	}
+
+}
+
+void ACheeseHeistCharacter::PickupRat() {
+	return;
 }

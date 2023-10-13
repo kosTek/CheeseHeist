@@ -12,6 +12,7 @@ class USkeletalMeshComponent;
 class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
+class ARatThrowObject;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -33,17 +34,29 @@ class ACheeseHeistCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
 
+	// Actions
+	
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* JumpAction;
 
+	/** Throw Rat Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ThrowRatAction;
+
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
+
+	// End Actions
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throwable", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<ARatThrowObject> RatThrowableObject;
+
 	
 public:
 	ACheeseHeistCharacter();
-
+	
 protected:
 	virtual void BeginPlay();
 
@@ -64,6 +77,14 @@ public:
 	/** Getter for the bool */
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
+
+	bool bHasRat;
+
+	UFUNCTION(BlueprintCallable, Category = Rat)
+	void ThrowRat();
+
+	UFUNCTION(BlueprintCallable, Category = Rat)
+	void PickupRat();
 
 protected:
 	/** Called for movement input */
