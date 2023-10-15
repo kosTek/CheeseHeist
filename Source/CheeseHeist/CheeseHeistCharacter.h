@@ -13,6 +13,7 @@ class UCameraComponent;
 class UInputAction;
 class UInputMappingContext;
 class ARatThrowObject;
+class ARatCharacter;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -52,6 +53,9 @@ class ACheeseHeistCharacter : public ACharacter
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throwable", meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<ARatThrowObject> RatThrowableObject;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throwable", meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<AActor> Rat;
 
 	
 public:

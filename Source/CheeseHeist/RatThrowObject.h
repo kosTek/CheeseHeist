@@ -7,11 +7,12 @@
 #include "RatThrowObject.generated.h"
 
 class USkeletalMeshComponent;
+class UBoxComponent;
+class ARatCharacter;
 
 UCLASS()
 class ARatThrowObject : public AActor {
 	GENERATED_BODY()
-	
 	
 
 public:	
@@ -20,6 +21,18 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
 	USkeletalMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
+	TSubclassOf<ARatCharacter> Rat;
+
+private:
+
+	FVector LastLocation;
+
+	FTimerHandle RatTimerHandle;
+
+	UFUNCTION()
+	void CheckRat();
 
 protected:
 	// Called when the game starts or when spawned

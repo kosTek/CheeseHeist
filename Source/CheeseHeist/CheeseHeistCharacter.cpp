@@ -11,6 +11,8 @@
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
 #include "RatThrowObject.h"
+#include "RatCharacter.h"
+#include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -48,8 +50,9 @@ void ACheeseHeistCharacter::BeginPlay() {
 	Super::BeginPlay();
 
 	// Add Input Mapping Context
+		//Add Input Mapping Context
 	if (APlayerController* PlayerController = Cast<APlayerController>(Controller)) {
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())){
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())) {
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
@@ -94,7 +97,7 @@ void ACheeseHeistCharacter::Look(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
-	if (Controller != nullptr){
+	if (Controller != nullptr) {
 		// add yaw and pitch input to controller
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
@@ -112,15 +115,30 @@ bool ACheeseHeistCharacter::GetHasRifle() {
 void ACheeseHeistCharacter::ThrowRat() {
 
 	if (bHasRat) {
-
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.Owner = this;
+		SpawnInfo.bNoFail;
 
 		ARatThrowObject* RatObject = GetWorld()->SpawnActor<ARatThrowObject>(RatThrowableObject, FirstPersonCameraComponent->GetComponentLocation() + ( FirstPersonCameraComponent->GetForwardVector() * 100), this->GetActorRotation(), SpawnInfo);
 
 		RatObject->Mesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, RatObject->GetActorLocation());
 
 		bHasRat = false;
+	} else if (!bHasRat){
+
+		AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), Rat);
+
+		ARatCharacter* RatCharacter = Cast<ARatCharacter>(Actor);
+
+		if (RatCharacter != nullptr) {
+
+			AController* PlayerController = GetController();
+
+			PlayerController->UnPossess();
+			PlayerController->Possess(RatCharacter);
+		}
+
+
 	}
 
 }

@@ -6,10 +6,12 @@
 #include "GameFramework/Character.h"
 #include "RatCharacter.generated.h"
 
+class UBoxComponent;
 class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class ACheeseHeistCharacter;
 struct FInputActionValue;
 
 UCLASS()
@@ -41,12 +43,24 @@ class CHEESEHEIST_API ARatCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Switch Character Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* SwitchCharacterAction;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Skeleton", meta = (AllowPrivateAccess = "true"))
 	USkeleton* Skeleton;
+
+private:
+
+	UFUNCTION()
+	void SwitchToHuman();
 
 public:
 	// Sets default values for this character's properties
 	ARatCharacter();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
+	TSubclassOf<ACheeseHeistCharacter> HumanCharacter;
 
 protected:
 	// Called when the game starts or when spawned

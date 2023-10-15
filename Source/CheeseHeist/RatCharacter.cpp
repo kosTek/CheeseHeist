@@ -11,12 +11,14 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Components/BoxComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "CheeseHeistCharacter.h"
 
 // Sets default values
-ARatCharacter::ARatCharacter()
-{
+ARatCharacter::ARatCharacter() {
 	// Set size for collision capsule
-	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
+	GetCapsuleComponent()->InitCapsuleSize(10.f, 10.f);
 
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
@@ -53,8 +55,7 @@ ARatCharacter::ARatCharacter()
 }
 
 // Called when the game starts or when spawned
-void ARatCharacter::BeginPlay()
-{
+void ARatCharacter::BeginPlay() {
 	// Call the base class  
 	Super::BeginPlay();
 
@@ -70,15 +71,13 @@ void ARatCharacter::BeginPlay()
 }
 
 // Called every frame
-void ARatCharacter::Tick(float DeltaTime)
-{
+void ARatCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 }
 
 // Called to bind functionality to input
-void ARatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
+void ARatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) {
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent)) {
 		
@@ -92,12 +91,13 @@ void ARatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARatCharacter::Look);
 
+		EnhancedInputComponent->BindAction(SwitchCharacterAction, ETriggerEvent::Started, this, &ARatCharacter::SwitchToHuman);
+
 	}
 
 }
 
-void ARatCharacter::Move(const FInputActionValue& Value)
-{
+void ARatCharacter::Move(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
 
@@ -120,8 +120,7 @@ void ARatCharacter::Move(const FInputActionValue& Value)
 	}
 }
 
-void ARatCharacter::Look(const FInputActionValue& Value)
-{
+void ARatCharacter::Look(const FInputActionValue& Value) {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();
 
@@ -133,3 +132,20 @@ void ARatCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void ARatCharacter::SwitchToHuman() {
+
+	if (HumanCharacter == nullptr) { return; }
+
+	AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), HumanCharacter);
+
+	ACheeseHeistCharacter* Human = Cast<ACheeseHeistCharacter>(Actor);
+
+	if (Human != nullptr) {
+		AController* PlayerController = GetController();
+
+		PlayerController->UnPossess();
+		PlayerController->Possess(Human);
+
+	}
+
+}
