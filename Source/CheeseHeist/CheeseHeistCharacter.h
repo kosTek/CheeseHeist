@@ -14,6 +14,7 @@ class UInputAction;
 class UInputMappingContext;
 class ARatThrowObject;
 class ARatCharacter;
+class AInteractActor;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -49,6 +50,10 @@ class ACheeseHeistCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
+	/** Interact Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	// End Actions
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Throwable", meta = (AllowPrivateAccess = "true"))
@@ -60,11 +65,6 @@ class ACheeseHeistCharacter : public ACharacter
 	
 public:
 	ACheeseHeistCharacter();
-	
-protected:
-	virtual void BeginPlay();
-
-public:
 		
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -90,23 +90,43 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Rat)
 	void PickupRat();
 
+	/** Returns Mesh1P subobject **/
+	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
+	/** Returns FirstPersonCameraComponent subobject **/
+	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	UFUNCTION(BlueprintCallable, Category = Interactable)
+	AInteractActor* GetTargetInteractObject() { return TargetInteractObject; };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	float InteractionRange;
+
 protected:
+	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaTime);
+
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
-public:
-	/** Returns Mesh1P subobject **/
-	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
-	/** Returns FirstPersonCameraComponent subobject **/
-	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+private:
+	UPROPERTY()
+	AInteractActor* TargetInteractObject;
 
+	UFUNCTION()
+	void Interact();
+
+	UFUNCTION()
+	void InteractTrace();
+
+	UFUNCTION()
+	void SetInteractObject(AInteractActor* Object);
 };
 

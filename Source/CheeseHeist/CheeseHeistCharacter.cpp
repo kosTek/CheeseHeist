@@ -12,6 +12,7 @@
 #include "Engine/LocalPlayer.h"
 #include "RatThrowObject.h"
 #include "RatCharacter.h"
+#include "InteractActor.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -20,6 +21,8 @@ DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 // ACheeseHeistCharacter
 
 ACheeseHeistCharacter::ACheeseHeistCharacter() {
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Character doesnt have a rifle at start
 	bHasRifle = false;
 	
@@ -43,6 +46,8 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 
 	bHasRat = true;
 
+	InteractionRange = 100.f;
+
 }
 
 void ACheeseHeistCharacter::BeginPlay() {
@@ -57,6 +62,13 @@ void ACheeseHeistCharacter::BeginPlay() {
 		}
 	}
 
+}
+
+void ACheeseHeistCharacter::Tick(float DeltaTime) {
+	Super::Tick(DeltaTime);
+
+
+	InteractTrace();
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -76,11 +88,13 @@ void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		// Throw Rat
 		EnhancedInputComponent->BindAction(ThrowRatAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::ThrowRat);
+
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::Interact);
 	}else {
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
-
 
 void ACheeseHeistCharacter::Move(const FInputActionValue& Value) {
 	// input is a Vector2D
@@ -145,4 +159,45 @@ void ACheeseHeistCharacter::ThrowRat() {
 
 void ACheeseHeistCharacter::PickupRat() {
 	return;
+}
+
+void ACheeseHeistCharacter::Interact() {
+
+	if (TargetInteractObject != nullptr) {
+		TargetInteractObject->OnInteract();
+	}
+
+}
+
+void ACheeseHeistCharacter::InteractTrace() {
+
+	FHitResult HitResult;
+
+	FVector StartVector = FirstPersonCameraComponent->GetComponentLocation() + FirstPersonCameraComponent->GetForwardVector();
+	FVector EndVector = StartVector + (FirstPersonCameraComponent->GetForwardVector() * InteractionRange);
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	bool GotHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, CollisionParams);
+
+	if (GotHit) {
+
+		auto* Object = Cast<AInteractActor>(HitResult.GetActor());
+
+		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), Object);
+
+		SetInteractObject(Object);
+
+		return;
+
+	}
+
+	SetInteractObject(nullptr);
+}
+
+void ACheeseHeistCharacter::SetInteractObject(AInteractActor* Object) {
+
+	TargetInteractObject = Object;
+
 }
