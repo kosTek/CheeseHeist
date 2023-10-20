@@ -48,6 +48,8 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 
 	InteractionRange = 100.f;
 
+	RatAnimThrowDelay = 0.7f;
+
 }
 
 void ACheeseHeistCharacter::BeginPlay() {
@@ -87,7 +89,7 @@ void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACheeseHeistCharacter::Look);
 
 		// Throw Rat
-		EnhancedInputComponent->BindAction(ThrowRatAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::ThrowRat);
+		EnhancedInputComponent->BindAction(ThrowRatAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::StartRatThrow);
 
 		// Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::Interact);
@@ -126,6 +128,10 @@ bool ACheeseHeistCharacter::GetHasRifle() {
 	return bHasRifle;
 }
 
+void ACheeseHeistCharacter::StartRatThrow() {
+
+}
+
 void ACheeseHeistCharacter::ThrowRat() {
 
 	if (bHasRat) {
@@ -155,6 +161,10 @@ void ACheeseHeistCharacter::ThrowRat() {
 
 	}
 
+}
+
+void ACheeseHeistCharacter::StartRatPickup() {
+	return;
 }
 
 void ACheeseHeistCharacter::PickupRat() {

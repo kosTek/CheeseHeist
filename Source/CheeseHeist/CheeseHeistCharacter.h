@@ -15,6 +15,7 @@ class UInputMappingContext;
 class ARatThrowObject;
 class ARatCharacter;
 class AInteractActor;
+class UAnimMontage;
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -82,13 +83,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
 
-	bool bHasRat;
-
-	UFUNCTION(BlueprintCallable, Category = Rat)
-	void ThrowRat();
-
-	UFUNCTION(BlueprintCallable, Category = Rat)
-	void PickupRat();
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rat)
+	float RatAnimThrowDelay;
 
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
@@ -100,6 +96,24 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
 	float InteractionRange;
+
+		/** Anim Montages */
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UAnimMontage* AnimStartRatThrow;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UAnimMontage* AnimPickupRat;
+
+		/** END Anim Montages */
+
+		/** Anim Values */
+
+	UFUNCTION(BlueprintCallable, Category = Rat)
+	bool GetHasRat() { return bHasRat; };
+
+		/** END Anim Values */
+
 
 protected:
 	virtual void BeginPlay();
@@ -128,5 +142,23 @@ private:
 
 	UFUNCTION()
 	void SetInteractObject(AInteractActor* Object);
+
+		/** Rat Anims */
+
+	bool bHasRat;
+
+	UFUNCTION()
+	void StartRatThrow();
+
+	UFUNCTION()
+	void ThrowRat();
+
+	UFUNCTION()
+	void StartRatPickup();
+
+	UFUNCTION()
+	void PickupRat();
+
+		/** END Rat Anims */
 };
 
