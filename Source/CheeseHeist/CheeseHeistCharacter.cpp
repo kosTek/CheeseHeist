@@ -46,6 +46,13 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 	//Mesh1P->SetRelativeRotation(FRotator(0.9f, -19.19f, 5.2f));
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	RatMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("RatMesh"));
+	RatMesh->SetOnlyOwnerSee(true);
+	RatMesh->SetupAttachment(Mesh1P, FName("Wrist_RSocket"));
+	RatMesh->bCastDynamicShadow = false;
+	RatMesh->CastShadow = false;
+	RatMesh->SetRelativeLocation(FVector(0.f, 0.f, 0.f));
+
 	bHasRat = true;
 
 	bCanPickupRat = false;
@@ -53,7 +60,7 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 	InteractionRange = 100.f;
 
 	RatAnimThrowDelay = 0.7f;
-	RatAnimPickupDelay = 0.7f;
+	RatAnimPickupDelay = 0.6f;
 
 }
 
@@ -171,6 +178,7 @@ void ACheeseHeistCharacter::ThrowRat() {
 		SpawnInfo.bNoFail;
 
 		ARatThrowObject* RatObject = GetWorld()->SpawnActor<ARatThrowObject>(RatThrowableObject, FirstPersonCameraComponent->GetComponentLocation() + ( FirstPersonCameraComponent->GetForwardVector() * 100), this->GetActorRotation(), SpawnInfo);
+		RatMesh->SetVisibility(false);
 
 		RatObject->Mesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, RatObject->GetActorLocation());
 
@@ -203,6 +211,7 @@ void ACheeseHeistCharacter::PickupRat() {
 
 	if (RatCharacter != nullptr) {
 		RatCharacter->Destroy();
+		RatMesh->SetVisibility(true);
 	}
 
 	bRatPickupAnimActive = false;
@@ -235,7 +244,7 @@ void ACheeseHeistCharacter::InteractTrace() {
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
+	//DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
 
 	bool GotHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, CollisionParams);
 
