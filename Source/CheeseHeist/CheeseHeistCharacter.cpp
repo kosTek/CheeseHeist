@@ -13,6 +13,8 @@
 #include "RatThrowObject.h"
 #include "RatCharacter.h"
 #include "InteractActor.h"
+#include "Animation/AnimInstance.h"
+#include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -46,9 +48,12 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 
 	bHasRat = true;
 
+	bCanPickupRat = false;
+
 	InteractionRange = 100.f;
 
 	RatAnimThrowDelay = 0.7f;
+	RatAnimPickupDelay = 0.7f;
 
 }
 
@@ -130,6 +135,32 @@ bool ACheeseHeistCharacter::GetHasRifle() {
 
 void ACheeseHeistCharacter::StartRatThrow() {
 
+	if (bHasRat) {
+		if (bRatThrowAnimActive) { return; }
+
+		bRatThrowAnimActive = true;
+
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (!AnimInstance) { return; }
+
+		AnimInstance->Montage_Play(AnimStartRatThrow);
+		GetWorldTimerManager().SetTimer(TRatThrow, this, &ACheeseHeistCharacter::ThrowRat, RatAnimThrowDelay, false, RatAnimThrowDelay);
+
+	} else {
+		if (!bCanSwitch) { return; }
+
+		AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), Rat);
+
+		ARatCharacter* RatCharacter = Cast<ARatCharacter>(Actor);
+
+		if (RatCharacter != nullptr) {
+
+			AController* PlayerController = GetController();
+
+			PlayerController->UnPossess();
+			PlayerController->Possess(RatCharacter);
+		}
+	}
 }
 
 void ACheeseHeistCharacter::ThrowRat() {
@@ -144,34 +175,49 @@ void ACheeseHeistCharacter::ThrowRat() {
 		RatObject->Mesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, RatObject->GetActorLocation());
 
 		bHasRat = false;
-	} else if (!bHasRat){
-
-		AActor* Actor = UGameplayStatics::GetActorOfClass(GetWorld(), Rat);
-
-		ARatCharacter* RatCharacter = Cast<ARatCharacter>(Actor);
-
-		if (RatCharacter != nullptr) {
-
-			AController* PlayerController = GetController();
-
-			PlayerController->UnPossess();
-			PlayerController->Possess(RatCharacter);
-		}
-
-
+		bRatThrowAnimActive = false;
 	}
 
 }
 
 void ACheeseHeistCharacter::StartRatPickup() {
-	return;
+	if (!bHasRat) {
+		bCanSwitch = false;
+
+		if (bRatPickupAnimActive) { return; }
+
+		bRatPickupAnimActive = true;
+
+		UAnimInstance* AnimInstance = Mesh1P->GetAnimInstance();
+		if (!AnimInstance) { return; }
+
+		AnimInstance->Montage_Play(AnimPickupRat);
+		GetWorldTimerManager().SetTimer(TRatPickup, this, &ACheeseHeistCharacter::PickupRat, RatAnimPickupDelay, false, RatAnimPickupDelay);
+	}
 }
 
 void ACheeseHeistCharacter::PickupRat() {
+
+	auto* RatCharacter = UGameplayStatics::GetActorOfClass(GetWorld(), ARatCharacter::StaticClass());
+	//ARatCharacter* RatCharacter = Cast<ARatCharacter>(Actor);
+
+	if (RatCharacter != nullptr) {
+		RatCharacter->Destroy();
+	}
+
+	bRatPickupAnimActive = false;
+	bCanSwitch = true;
+	bHasRat = true;
 	return;
 }
 
 void ACheeseHeistCharacter::Interact() {
+
+	if (bCanPickupRat) {
+		StartRatPickup();
+
+		return;
+	}
 
 	if (TargetInteractObject != nullptr) {
 		TargetInteractObject->OnInteract();
@@ -189,9 +235,21 @@ void ACheeseHeistCharacter::InteractTrace() {
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
+	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
+
 	bool GotHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, CollisionParams);
 
 	if (GotHit) {
+
+		ARatCharacter* RatCharacterObject = Cast<ARatCharacter>(HitResult.GetActor());
+
+		if (RatCharacterObject) {
+			bCanPickupRat = true;
+
+			//UE_LOG(LogTemp, Warning, TEXT("Can pickup rat"));
+
+			return;
+		}
 
 		auto* Object = Cast<AInteractActor>(HitResult.GetActor());
 
@@ -203,6 +261,7 @@ void ACheeseHeistCharacter::InteractTrace() {
 
 	}
 
+	bCanPickupRat = false;
 	SetInteractObject(nullptr);
 }
 

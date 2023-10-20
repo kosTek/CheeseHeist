@@ -83,9 +83,6 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Weapon)
 	bool GetHasRifle();
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rat)
-	float RatAnimThrowDelay;
-
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
 	/** Returns FirstPersonCameraComponent subobject **/
@@ -112,7 +109,23 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Rat)
 	bool GetHasRat() { return bHasRat; };
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rat)
+	float RatAnimThrowDelay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Rat)
+	float RatAnimPickupDelay;
+
 		/** END Anim Values */
+
+		/** Anim Timers */
+
+	UPROPERTY()
+	FTimerHandle TRatThrow;
+
+	UPROPERTY()
+	FTimerHandle TRatPickup;
+
+		/** END Anim Timers*/
 
 
 protected:
@@ -143,8 +156,18 @@ private:
 	UFUNCTION()
 	void SetInteractObject(AInteractActor* Object);
 
-		/** Rat Anims */
+		/** Rat Interaction */
 
+	UPROPERTY()
+	bool bRatThrowAnimActive{ false };
+
+	UPROPERTY()
+	bool bRatPickupAnimActive{ false };
+	
+	UPROPERTY()
+	bool bCanSwitch{ true };
+
+	UPROPERTY()
 	bool bHasRat;
 
 	UFUNCTION()
@@ -159,6 +182,9 @@ private:
 	UFUNCTION()
 	void PickupRat();
 
-		/** END Rat Anims */
+	UPROPERTY()
+	bool bCanPickupRat{ false };
+
+		/** END Rat Interaction */
 };
 

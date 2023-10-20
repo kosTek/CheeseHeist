@@ -115,8 +115,6 @@ void ARatCharacter::Move(const FInputActionValue& Value) {
 		// add movement 
 		AddMovementInput(ForwardDirection, MovementVector.Y);
 		AddMovementInput(RightDirection, MovementVector.X);
-
-		UE_LOG(LogTemp, Warning, TEXT("XD"));
 	}
 }
 
@@ -143,7 +141,7 @@ void ARatCharacter::SwitchToHuman() {
 	if (Human != nullptr) {
 		AController* PlayerController = GetController();
 
-		PlayerController->UnPossess();
+		PlayerController->UnPossess();	
 		PlayerController->Possess(Human);
 
 	}
