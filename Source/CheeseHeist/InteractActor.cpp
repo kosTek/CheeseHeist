@@ -9,7 +9,9 @@
 AInteractActor::AInteractActor() {
 	PrimaryActorTick.bCanEverTick = false;
 
-	IsLocked = true;
+	bRatOnlyInteract = false;
+
+	bIsLocked = true;
 
 }
 
@@ -25,13 +27,17 @@ void AInteractActor::Tick(float DeltaTime) {
 
 void AInteractActor::ChangeLockStatus(bool Status) {
 
-	IsLocked = Status;
+	bIsLocked = Status;
+
+	if (!bIsLocked) {
+		OnUnlock();
+	}
 
 }
 
 bool AInteractActor::GetLockStatus() {
 
-	return IsLocked;
+	return bIsLocked;
 
 }
 
@@ -41,25 +47,10 @@ void AInteractActor::OnInteract(AActor* ObjectToUnlock) { // Function must be ov
 
 }
 
-// Rat does not use raycasting to interact due its nature as a 3rd person character, therefore it is based on a bounding box
-
-void AInteractActor::OnOverlapBegin(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-
-	ARatCharacter* Rat = Cast<ARatCharacter>(OtherActor);
-
-	if (Rat != nullptr) { // Add IsControlled
-
-	}
-
-
+bool AInteractActor::GetCanInteract() {
+	return bRatOnlyInteract;
 }
 
-void AInteractActor::OnOverlapEnd(AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
-
-	ARatCharacter* Rat = Cast<ARatCharacter>(OtherActor);
-	
-	if (Rat != nullptr) { // Add IsControlled
-
-	}
-
+void AInteractActor::OnUnlock() {
+	return;
 }

@@ -11,7 +11,9 @@ class USpringArmComponent;
 class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
+class UArrowComponent;
 class ACheeseHeistCharacter;
+class AInteractActor;
 struct FInputActionValue;
 
 UCLASS()
@@ -43,6 +45,10 @@ class CHEESEHEIST_API ARatCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	/** Interact Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* InteractAction;
+
 	/** Switch Character Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* SwitchCharacterAction;
@@ -62,17 +68,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Character)
 	TSubclassOf<ACheeseHeistCharacter> HumanCharacter;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-
-public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -83,5 +78,32 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	float InteractionRange;
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+	/** Called for movement input */
+	void Move(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
+private:
+
+	UPROPERTY()
+	AInteractActor* TargetInteractObject;
+
+	UFUNCTION()
+	void SetInteractObject(AInteractActor* Object);
+
+	UFUNCTION()
+	void InteractTrace();
+
+	UFUNCTION()
+	void Interact();
 
 };

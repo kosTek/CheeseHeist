@@ -14,9 +14,13 @@
 #include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "CheeseHeistCharacter.h"
+#include "InteractActor.h"
+#include "Components/ArrowComponent.h"
 
 // Sets default values
 ARatCharacter::ARatCharacter() {
+	PrimaryActorTick.bCanEverTick = true;
+
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(10.f, 10.f);
 
@@ -52,6 +56,7 @@ ARatCharacter::ARatCharacter() {
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
+	InteractionRange = 100.f;
 }
 
 // Called when the game starts or when spawned
@@ -74,6 +79,8 @@ void ARatCharacter::BeginPlay() {
 void ARatCharacter::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
+	InteractTrace();
+
 }
 
 // Called to bind functionality to input
@@ -91,7 +98,11 @@ void ARatCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ARatCharacter::Look);
 
+		// Character Switch
 		EnhancedInputComponent->BindAction(SwitchCharacterAction, ETriggerEvent::Started, this, &ARatCharacter::SwitchToHuman);
+
+		// Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ARatCharacter::Interact);
 
 	}
 
@@ -144,6 +155,52 @@ void ARatCharacter::SwitchToHuman() {
 		PlayerController->UnPossess();	
 		PlayerController->Possess(Human);
 
+	}
+
+}
+
+void ARatCharacter::SetInteractObject(AInteractActor* Object) {
+
+	TargetInteractObject = Object;
+
+}
+
+void ARatCharacter::InteractTrace() {
+	FHitResult HitResult;
+
+	FVector StartVector = GetArrowComponent()->GetComponentLocation() + GetArrowComponent()->GetForwardVector();
+	FVector EndVector = StartVector + (GetArrowComponent()->GetForwardVector() * InteractionRange);
+
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(this);
+
+	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
+
+	bool GotHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, CollisionParams);
+
+	if (GotHit) {
+
+		auto* Object = Cast<AInteractActor>(HitResult.GetActor());
+
+		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), Object);
+
+		if (Object != nullptr && Object->GetCanInteract()) {
+			SetInteractObject(Object);
+		} else {
+			SetInteractObject(nullptr);
+		}
+		
+		return;
+
+	}
+
+	SetInteractObject(nullptr);
+}
+
+void ARatCharacter::Interact() {
+
+	if (TargetInteractObject != nullptr) {
+		TargetInteractObject->OnInteract();
 	}
 
 }

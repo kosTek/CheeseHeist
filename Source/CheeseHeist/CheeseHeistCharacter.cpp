@@ -263,9 +263,12 @@ void ACheeseHeistCharacter::InteractTrace() {
 		auto* Object = Cast<AInteractActor>(HitResult.GetActor());
 
 		//UE_LOG(LogTemp, Warning, TEXT("Hit: %s"), Object);
-
-		SetInteractObject(Object);
-
+		if (Object != nullptr && !Object->GetCanInteract()) {
+			SetInteractObject(Object);
+		} else {
+			SetInteractObject(nullptr);
+		}
+		
 		return;
 
 	}

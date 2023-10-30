@@ -2,9 +2,24 @@
 
 
 #include "ObjectiveInteractActor.h"
+#include "Kismet/GameplayStatics.h"
 
 void AObjectiveInteractActor::OnInteract(AActor* ObjectToUnlock) {
 
-	UE_LOG(LogTemp, Warning, TEXT("Interacted"));
+	if (GetLockStatus()) {
+		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Locked"));
 
+		return;
+	}
+
+	if (ObjectToUnlock != nullptr) {
+		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted to unlock Object | Unlocked"));
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Unlocked"));
+
+}
+
+void AObjectiveInteractActor::OnUnlock() {
+	return;
 }

@@ -16,4 +16,6 @@ class CHEESEHEIST_API AObjectiveInteractActor : public AInteractActor {
 public:
 	virtual void OnInteract(AActor* ObjectToUnlock = nullptr) override;
 
+	virtual void OnUnlock() override;
+
 };
