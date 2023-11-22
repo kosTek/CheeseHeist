@@ -18,4 +18,17 @@ public:
 
 	virtual void OnUnlock() override;
 
+	bool bIsCompleted = false;
+
+	void SetComplete(bool Status = false);
+
+	bool CheckForCompletion();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
+	UAnimMontage* AnimOpenObject;
+
+	bool IsObjectOpen = false;
+
+	void OpenObject();
+
 };

@@ -2,12 +2,28 @@
 
 
 #include "InteractActor.h"
+
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/StaticMeshComponent.h"
+#include "Components/BoxComponent.h"
+
 #include "CheeseHeistCharacter.h"
 #include "RatCharacter.h"
 
 // Sets default values
 AInteractActor::AInteractActor() {
 	PrimaryActorTick.bCanEverTick = false;
+
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
+	RootComponent = SkeletalMesh;
+
+	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
+	StaticMesh->SetupAttachment(RootComponent);
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Interact Box"));
+	BoxComponent->InitBoxExtent(FVector(10,10,10));
+	BoxComponent->SetCollisionProfileName("BlockAll");
+	BoxComponent->SetupAttachment(RootComponent);
 
 	bRatOnlyInteract = false;
 

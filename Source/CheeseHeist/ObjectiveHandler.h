@@ -1,0 +1,66 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "GameFramework/Actor.h"
+#include "Math/RandomStream.h"
+#include "ObjectiveHandler.generated.h"
+
+class AObjectiveInteractActor;
+class UObjective;
+
+UCLASS()
+class CHEESEHEIST_API AObjectiveHandler : public AActor
+{
+	GENERATED_BODY()
+	
+public:	
+	// Sets default values for this actor's properties
+	AObjectiveHandler();
+
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	/** Objective list in order of required completion */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objectives)
+	TArray<UObjective*> Objectives;
+
+	/** Proceeds down the list of objectives for the player to complete */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	void NextObjective();
+
+	/** Proceeds to give a final objective to the player to finish the level */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	void OnObjectivesFinished();
+
+	/** Returns the index of the current objective */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	int GetCurrentObjectiveIndex() { return CurrentObjectiveIndex; }
+
+	/** Returns the structure of the current objective */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	UObjective* GetCurrentObjective() { return Objectives[CurrentObjectiveIndex]; }
+
+	UFUNCTION(BlueprintCallable, Category = Seed)
+	void GenerateSeed() { Seed.GenerateNewSeed(); }
+
+	UFUNCTION(BlueprintCallable, Category = Seed)
+	int32 GetSeed() { return Seed.GetCurrentSeed(); }
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
+
+private:
+
+	/** Index of an objective used to read from objectives table */
+	UPROPERTY(VisibleAnywhere, Category = Objectives)
+	int CurrentObjectiveIndex = 0;
+
+	/** Seed for objective spawns and minigames */
+	FRandomStream Seed;
+
+	bool bObjectivesFinished = false;
+
+};
