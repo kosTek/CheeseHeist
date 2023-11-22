@@ -8,15 +8,7 @@
 #include "ObjectiveHandler.generated.h"
 
 class AObjectiveInteractActor;
-
-struct Objective {
-
-	AObjectiveInteractActor* ObjectiveActor;
-	TArray<FTransform> PossibleLocations;
-	FText ObjectiveDescription;
-	bool IsCompleted;
-
-};
+class UObjective;
 
 UCLASS()
 class CHEESEHEIST_API AObjectiveHandler : public AActor
@@ -32,14 +24,15 @@ public:
 
 	/** Objective list in order of required completion */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objectives)
-	TArray<Objective> Objectives;
+	TArray<UObjective*> Objectives;
 
 	/** Proceeds down the list of objectives for the player to complete */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
 	void NextObjective();
 
+	/** Proceeds to give a final objective to the player to finish the level */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
-	void OnObjectiveComplete();
+	void OnObjectivesFinished();
 
 	/** Returns the index of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
@@ -47,7 +40,7 @@ public:
 
 	/** Returns the structure of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
-	Objective GetCurrentObjective() { return Objectives[CurrentObjectiveIndex]; }
+	UObjective* GetCurrentObjective() { return Objectives[CurrentObjectiveIndex]; }
 
 	UFUNCTION(BlueprintCallable, Category = Seed)
 	void GenerateSeed() { Seed.GenerateNewSeed(); }
@@ -62,10 +55,12 @@ protected:
 private:
 
 	/** Index of an objective used to read from objectives table */
-	UPROPERTY(EditAnywhere, Category = Objectives)
-	int CurrentObjectiveIndex;
+	UPROPERTY(VisibleAnywhere, Category = Objectives)
+	int CurrentObjectiveIndex = 0;
 
 	/** Seed for objective spawns and minigames */
 	FRandomStream Seed;
+
+	bool bObjectivesFinished = false;
 
 };

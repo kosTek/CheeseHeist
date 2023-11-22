@@ -8,6 +8,9 @@
 
 class ACheeseHeistCharacter;
 class ARatCharacter;
+class USkeletalMeshComponent;
+class UStaticMeshComponent;
+class UBoxComponent;
 
 UCLASS()
 class CHEESEHEIST_API AInteractActor : public AActor
@@ -20,6 +23,15 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	USkeletalMeshComponent* SkeletalMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	UStaticMeshComponent* StaticMesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
 	bool bRatOnlyInteract;
