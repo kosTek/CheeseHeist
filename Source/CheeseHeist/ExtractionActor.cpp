@@ -6,8 +6,18 @@
 
 void AExtractionActor::OnInteract(AActor* ObjectToUnlock) {
 
-	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Opening"));
+	if (ObjectiveHandler == nullptr) { 
+		UE_LOG(LogTemp, Warning, TEXT("[Objective]: NO OBJECTIVE HANDLER POINTER"));
+		return;
+	
+	}
 
-	return;
+	if (ObjectiveHandler->GetObjectivesFinished()) {
+		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Extraction"));
+
+		return;
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Objectives not finished"));
 
 }

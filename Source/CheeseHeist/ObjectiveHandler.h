@@ -47,6 +47,10 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Objectives)
 	UObjective* GetCurrentObjective();
 
+	/** Returns the status of the objectives */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	bool GetObjectivesFinished() { return bObjectivesFinished; }
+
 	UFUNCTION(BlueprintCallable, Category = Seed)
 	void GenerateSeed() { Seed.GenerateNewSeed(); }
 

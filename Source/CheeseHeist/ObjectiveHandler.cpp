@@ -41,8 +41,18 @@ void AObjectiveHandler::BeginPlay() {
 
 	}
 
-
 	Objectives[0]->SpawnedActor->Unlock();
+
+	/** Spawn Extraction */
+
+	int32 SelectedSpawn = Seed.RandRange(0, ExtractionObjective->PossibleLocations.Num() - 1);
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	SpawnInfo.bNoFail;
+
+	ExtractionObjective->SpawnedActor = GetWorld()->SpawnActor<AObjectiveInteractActor>(ExtractionObjective->ObjectiveActor, ExtractionObjective->PossibleLocations[SelectedSpawn], SpawnInfo);
+	ExtractionObjective->SpawnedActor->SetObjectiveHandler(this);
 }
 
 // Called every frame
@@ -50,6 +60,7 @@ void AObjectiveHandler::Tick(float DeltaTime) {
 	Super::Tick(DeltaTime);
 
 	if (bObjectivesFinished) { return; }
+	if (Objectives.IsEmpty()) { return; }
 
 	if (Objectives[CurrentObjectiveIndex]->SpawnedActor != nullptr) {
 		if (Objectives[CurrentObjectiveIndex]->SpawnedActor->CheckForCompletion()) {

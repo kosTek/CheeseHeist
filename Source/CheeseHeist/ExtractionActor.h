@@ -12,10 +12,6 @@ UCLASS()
 class CHEESEHEIST_API AExtractionActor : public AObjectiveInteractActor
 {
 	GENERATED_BODY()
-	
-	AObjectiveHandler* ObjectiveHandler;
-
-	void SetObjectiveHandler(AObjectiveHandler* Handler) { ObjectiveHandler = Handler; }
 
 	virtual void OnInteract(AActor* ObjectToUnlock = nullptr) override;
 
