@@ -41,16 +41,6 @@ void AInteractActor::Tick(float DeltaTime) {
 
 }
 
-void AInteractActor::ChangeLockStatus(bool Status) {
-
-	bIsLocked = Status;
-
-	if (!bIsLocked) {
-		OnUnlock();
-	}
-
-}
-
 bool AInteractActor::GetLockStatus() {
 
 	return bIsLocked;
@@ -67,6 +57,10 @@ bool AInteractActor::GetCanInteract() {
 	return bRatOnlyInteract;
 }
 
-void AInteractActor::OnUnlock() {
-	return;
+void AInteractActor::Unlock() {
+	bIsLocked = false;
+}
+
+void AInteractActor::Lock() {
+	bIsLocked = true;
 }

@@ -37,9 +37,12 @@ void AObjectiveHandler::BeginPlay() {
 		SpawnInfo.bNoFail;
 
 		Objectives[i]->SpawnedActor = GetWorld()->SpawnActor<AObjectiveInteractActor>(Objectives[i]->ObjectiveActor, Objectives[i]->PossibleLocations[SelectedSpawn], SpawnInfo);
+		Objectives[i]->SpawnedActor->SetObjectiveHandler(this);
 
 	}
 
+
+	Objectives[0]->SpawnedActor->Unlock();
 }
 
 // Called every frame
@@ -59,7 +62,7 @@ void AObjectiveHandler::Tick(float DeltaTime) {
 }
 
 void AObjectiveHandler::NextObjective(){
-	if (Objectives[CurrentObjectiveIndex + 1] == nullptr) {
+	if (CurrentObjectiveIndex + 1 > Objectives.Num() - 1) {
 		OnObjectivesFinished();
 		return;
 	}
@@ -76,3 +79,21 @@ void AObjectiveHandler::OnObjectivesFinished() {
 	return;
 }
 
+int AObjectiveHandler::GetCurrentObjectiveIndex() {
+
+	if (bObjectivesFinished) {
+		return -1;
+	}
+
+	return CurrentObjectiveIndex;
+}
+
+UObjective* AObjectiveHandler::GetCurrentObjective() { 
+	
+	if (bObjectivesFinished) {
+		return ExtractionObjective;
+	}
+
+	return Objectives[CurrentObjectiveIndex]; 
+
+}

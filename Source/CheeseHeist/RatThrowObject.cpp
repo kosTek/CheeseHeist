@@ -36,7 +36,7 @@ void ARatThrowObject::CheckRat() {
 
 	FVector Location = GetActorLocation();
 
-	if (ActorGetDistanceToCollision(LastLocation, ECC_WorldDynamic, Location) < 10) {
+	if (ActorGetDistanceToCollision(LastLocation, ECC_WorldDynamic, Location) < 15) {
 		FActorSpawnParameters SpawnInfo;
 		SpawnInfo.bNoFail;
 

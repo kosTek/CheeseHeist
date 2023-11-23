@@ -6,17 +6,18 @@
 #include "InteractActor.h"
 #include "ObjectiveInteractActor.generated.h"
 
-/**
- * 
- */
+class AObjectiveHandler;
+
 UCLASS()
 class CHEESEHEIST_API AObjectiveInteractActor : public AInteractActor {
 	GENERATED_BODY()
 	
 public:
-	virtual void OnInteract(AActor* ObjectToUnlock = nullptr) override;
+	AObjectiveHandler* ObjectiveHandler;
 
-	virtual void OnUnlock() override;
+	void SetObjectiveHandler(AObjectiveHandler* Handler) { ObjectiveHandler = Handler; }
+
+	virtual void OnInteract(AActor* ObjectToUnlock = nullptr) override;
 
 	bool bIsCompleted = false;
 

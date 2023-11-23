@@ -2,6 +2,7 @@
 
 
 #include "ObjectiveInteractActor.h"
+#include "ObjectiveHandler.h"
 #include "Kismet/GameplayStatics.h"
 
 void AObjectiveInteractActor::OnInteract(AActor* ObjectToUnlock) {
@@ -24,20 +25,18 @@ void AObjectiveInteractActor::OnInteract(AActor* ObjectToUnlock) {
 		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Locked"));
 
 		return;
+	} else {
+		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Unlocked"));
 	}
 
 	if (ObjectToUnlock != nullptr) { // To be deleted???
 		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted to unlock Object | Unlocked"));
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Unlocked"));
+	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Completed"));
 
 	bIsCompleted = true; // DEBUG
 
-}
-
-void AObjectiveInteractActor::OnUnlock() {
-	return;
 }
 
 void AObjectiveInteractActor::SetComplete(bool Status) {

@@ -8,6 +8,7 @@
 #include "ObjectiveHandler.generated.h"
 
 class AObjectiveInteractActor;
+class AExtrationActor;
 class UObjective;
 
 UCLASS()
@@ -26,6 +27,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objectives)
 	TArray<UObjective*> Objectives;
 
+	/** Objective that the player has to interact with or enter its bounding box to finish the level */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objectives)
+	UObjective* ExtractionObjective;
+
 	/** Proceeds down the list of objectives for the player to complete */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
 	void NextObjective();
@@ -36,11 +41,11 @@ public:
 
 	/** Returns the index of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
-	int GetCurrentObjectiveIndex() { return CurrentObjectiveIndex; }
+	int GetCurrentObjectiveIndex();
 
 	/** Returns the structure of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
-	UObjective* GetCurrentObjective() { return Objectives[CurrentObjectiveIndex]; }
+	UObjective* GetCurrentObjective();
 
 	UFUNCTION(BlueprintCallable, Category = Seed)
 	void GenerateSeed() { Seed.GenerateNewSeed(); }

@@ -40,16 +40,16 @@ public:
 	bool bIsLocked;
 
 	UFUNCTION(BlueprintCallable, Category = Interactable)
-	void ChangeLockStatus(bool Status);
-
-	UFUNCTION(BlueprintCallable, Category = Interactable)
 	bool GetLockStatus();
 
 	UFUNCTION(BlueprintCallable, Category = Interactable)
 	virtual void OnInteract(AActor* ObjectToUnlock = nullptr);
 
 	UFUNCTION(BlueprintCallable, Category = Interactable)
-	virtual void OnUnlock();
+	virtual void Unlock();
+
+	UFUNCTION(BlueprintCallable, Category = Interactable)
+	virtual void Lock();
 
 	UFUNCTION(BlueprintCallable, Category = Interactable)
 	bool GetCanInteract();
