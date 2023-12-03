@@ -200,7 +200,7 @@ void ARatCharacter::InteractTrace() {
 void ARatCharacter::Interact() {
 
 	if (TargetInteractObject != nullptr) {
-		TargetInteractObject->OnInteract();
+		TargetInteractObject->Interact();
 	}
 
 }

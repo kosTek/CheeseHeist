@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
+#include "Enumerations.h"
 #include "CheeseHeistCharacter.generated.h"
 
 class UInputComponent;
@@ -16,6 +17,9 @@ class ARatThrowObject;
 class ARatCharacter;
 class AInteractActor;
 class UAnimMontage;
+class ACollectActor;
+class ABagObject;
+
 struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
@@ -49,6 +53,10 @@ class ACheeseHeistCharacter : public ACharacter
 	/** Throw Rat Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* ThrowRatAction;
+
+	/** Throw Bag Action */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* ThrowBagAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category=Input, meta=(AllowPrivateAccess = "true"))
@@ -130,7 +138,31 @@ public:
 
 		/** END Anim Timers*/
 
+		/** Collectables & Throw Bags */
 
+	UFUNCTION(BlueprintCallable, Category = Collectable)
+	void CollectObject(ECollectableType ObjectType, ACollectActor* Actor);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collectable)
+	int MaxCheeseWheelsInBag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collectable)
+	int MaxCheeseSlicesInBag;
+
+	/** Handles picking up the bag by the player */
+	UFUNCTION(Category = Collectable)
+	void PickupBag(ABagObject* Bag);
+
+	/** Bag Object used to store collected loot */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collectable)
+	TSubclassOf<ABagObject> BagObject;
+
+	/** The force that the bag will experience when player throws it */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Collectable)
+	float BagThrowForce;
+
+		/** END Collectables & Throw Bags */
+	
 protected:
 	virtual void BeginPlay();
 
@@ -189,5 +221,25 @@ private:
 	bool bCanPickupRat{ false };
 
 		/** END Rat Interaction */
+
+		/** Collectables & Throw Bags */
+
+	UPROPERTY()
+	int CheeseWheelsInBag;
+
+	UPROPERTY()
+	int CheeseSlicesInBag;
+
+	UPROPERTY()
+	int CollectablesFound;
+
+	UFUNCTION()
+	void ThrowBag();
+
+	UPROPERTY()
+	bool bHasBag;
+
+		/** END Collectables & Throw Bags */
+
 };
 
