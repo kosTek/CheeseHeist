@@ -45,6 +45,15 @@ void ABagObject::Interact() {
 
 void ABagObject::SetContent(int Wheels, int Slices) {
 
+	CheeseWheelsInBag = Wheels;
+	CheeseSlicesInBag = Slices;
+
+	if ((CheeseWheelsInBag == MaxCheeseWheelsInBag) && (CheeseSlicesInBag == MaxCheeseSlicesInBag)) {
+		StaticMesh->SetStaticMesh(ClosedMesh);
+	} else {
+		StaticMesh->SetStaticMesh(OpenedMesh);
+	}
+
 	return;
 
 }

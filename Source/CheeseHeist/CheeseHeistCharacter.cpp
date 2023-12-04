@@ -337,6 +337,8 @@ void ACheeseHeistCharacter::ThrowBag() {
 
 	if (BagObject == nullptr) { return; }
 
+	if ((CheeseWheelsInBag == 0) && (CheeseSlicesInBag == 0)) { return; }
+
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Owner = this;
 	SpawnInfo.bNoFail;
@@ -344,8 +346,11 @@ void ACheeseHeistCharacter::ThrowBag() {
 	ABagObject* Object = GetWorld()->SpawnActor<ABagObject>(BagObject, FirstPersonCameraComponent->GetComponentLocation() - FVector(0,0,40) + (FirstPersonCameraComponent->GetForwardVector() * 100), this->GetActorRotation(), SpawnInfo);
 
 	//Object->StaticMesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, Object->GetActorLocation());
-
+	Object->SetContent(CheeseWheelsInBag, CheeseSlicesInBag);
 	Object->StaticMesh->AddForce(FirstPersonCameraComponent->GetForwardVector() * BagThrowForce * Object->StaticMesh->GetMass());
+
+	CheeseWheelsInBag -= CheeseWheelsInBag;
+	CheeseSlicesInBag -= CheeseSlicesInBag;
 
 }
 
@@ -353,6 +358,19 @@ void ACheeseHeistCharacter::PickupBag(ABagObject* Bag) {
 
 	if (Bag == nullptr) { return; }
 	
+	FVector2D Contents = Bag->GetContent();
+	int Wheels = Contents.X;
+	int Slices = Contents.Y;
 
+	if ((CheeseWheelsInBag + Wheels > MaxCheeseWheelsInBag) || (CheeseSlicesInBag + Slices > MaxCheeseSlicesInBag)) {
+		// Notify the player
 
+		UE_LOG(LogTemp, Warning, TEXT("[Collectable] Contents exceed the capacity!"));
+		return; 
+	}
+
+	CheeseWheelsInBag += Wheels;
+	CheeseSlicesInBag += Slices;
+
+	Bag->Destroy();
 }
