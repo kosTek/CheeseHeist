@@ -79,6 +79,7 @@ void AObjectiveHandler::NextObjective(){
 	}
 
 	CurrentObjectiveIndex += 1;
+	Objectives[CurrentObjectiveIndex]->SpawnedActor->Unlock();
 }
 
 void AObjectiveHandler::OnObjectivesFinished() {

@@ -13,6 +13,6 @@ class CHEESEHEIST_API AExtractionActor : public AObjectiveInteractActor
 {
 	GENERATED_BODY()
 
-	virtual void OnInteract(AActor* ObjectToUnlock = nullptr) override;
+	virtual void Interact() override;
 
 };

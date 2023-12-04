@@ -2,10 +2,27 @@
 
 
 #include "ObjectiveInteractActor.h"
-#include "ObjectiveHandler.h"
+
+#include "Components/SkeletalMeshComponent.h"
+#include "Components/BoxComponent.h"
 #include "Kismet/GameplayStatics.h"
 
-void AObjectiveInteractActor::OnInteract(AActor* ObjectToUnlock) {
+#include "ObjectiveHandler.h"
+
+
+AObjectiveInteractActor::AObjectiveInteractActor() {
+	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
+	SkeletalMesh->SetupAttachment(RootComponent);
+
+	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Interact Box"));
+	BoxComponent->InitBoxExtent(FVector(10, 10, 10));
+	BoxComponent->SetCollisionProfileName("BlockAll");
+	BoxComponent->SetupAttachment(RootComponent);
+
+	bIsLocked = true;
+}
+
+void AObjectiveInteractActor::Interact() {
 
 	if (bIsCompleted) {
 		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Completed"));
@@ -29,10 +46,6 @@ void AObjectiveInteractActor::OnInteract(AActor* ObjectToUnlock) {
 		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Unlocked"));
 	}
 
-	if (ObjectToUnlock != nullptr) { // To be deleted???
-		UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted to unlock Object | Unlocked"));
-	}
-
 	UE_LOG(LogTemp, Warning, TEXT("[Objective]: Interacted | Completed"));
 
 	bIsCompleted = true; // DEBUG
@@ -49,4 +62,18 @@ bool AObjectiveInteractActor::CheckForCompletion() {
 
 void AObjectiveInteractActor::OpenObject() {
 	return;
+}
+
+bool AObjectiveInteractActor::GetLockStatus() {
+
+	return bIsLocked;
+
+}
+
+void AObjectiveInteractActor::Unlock() {
+	bIsLocked = false;
+}
+
+void AObjectiveInteractActor::Lock() {
+	bIsLocked = true;
 }

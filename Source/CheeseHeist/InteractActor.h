@@ -8,9 +8,8 @@
 
 class ACheeseHeistCharacter;
 class ARatCharacter;
-class USkeletalMeshComponent;
+
 class UStaticMeshComponent;
-class UBoxComponent;
 
 UCLASS()
 class CHEESEHEIST_API AInteractActor : public AActor
@@ -25,31 +24,13 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
-	USkeletalMeshComponent* SkeletalMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
 	UStaticMeshComponent* StaticMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
-	UBoxComponent* BoxComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
 	bool bRatOnlyInteract;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interactable)
-	bool bIsLocked;
-
 	UFUNCTION(BlueprintCallable, Category = Interactable)
-	bool GetLockStatus();
-
-	UFUNCTION(BlueprintCallable, Category = Interactable)
-	virtual void OnInteract(AActor* ObjectToUnlock = nullptr);
-
-	UFUNCTION(BlueprintCallable, Category = Interactable)
-	virtual void Unlock();
-
-	UFUNCTION(BlueprintCallable, Category = Interactable)
-	virtual void Lock();
+	virtual void Interact();
 
 	UFUNCTION(BlueprintCallable, Category = Interactable)
 	bool GetCanInteract();

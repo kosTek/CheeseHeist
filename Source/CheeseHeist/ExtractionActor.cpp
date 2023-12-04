@@ -4,7 +4,7 @@
 #include "ExtractionActor.h"
 #include "ObjectiveHandler.h"
 
-void AExtractionActor::OnInteract(AActor* ObjectToUnlock) {
+void AExtractionActor::Interact() {
 
 	if (ObjectiveHandler == nullptr) { 
 		UE_LOG(LogTemp, Warning, TEXT("[Objective]: NO OBJECTIVE HANDLER POINTER"));

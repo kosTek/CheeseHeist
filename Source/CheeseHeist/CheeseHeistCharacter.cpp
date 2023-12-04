@@ -10,12 +10,15 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 #include "Engine/LocalPlayer.h"
-#include "RatThrowObject.h"
-#include "RatCharacter.h"
-#include "InteractActor.h"
 #include "Animation/AnimInstance.h"
 #include "Animation/AnimMontage.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "RatThrowObject.h"
+#include "RatCharacter.h"
+#include "InteractActor.h"
+#include "CollectActor.h"
+#include "BagObject.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -62,6 +65,15 @@ ACheeseHeistCharacter::ACheeseHeistCharacter() {
 	RatAnimThrowDelay = 0.7f;
 	RatAnimPickupDelay = 0.6f;
 
+	CheeseWheelsInBag = 0;
+	CheeseSlicesInBag = 0;
+	CollectablesFound = 0;
+
+	MaxCheeseWheelsInBag = 2;
+	MaxCheeseSlicesInBag = 4;
+
+	BagThrowForce = 90000.f;
+
 }
 
 void ACheeseHeistCharacter::BeginPlay() {
@@ -102,6 +114,9 @@ void ACheeseHeistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 
 		// Throw Rat
 		EnhancedInputComponent->BindAction(ThrowRatAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::StartRatThrow);
+
+		// Throw Bag
+		EnhancedInputComponent->BindAction(ThrowBagAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::ThrowBag);
 
 		// Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &ACheeseHeistCharacter::Interact);
@@ -229,7 +244,7 @@ void ACheeseHeistCharacter::Interact() {
 	}
 
 	if (TargetInteractObject != nullptr) {
-		TargetInteractObject->OnInteract();
+		TargetInteractObject->Interact();
 	}
 
 }
@@ -281,4 +296,81 @@ void ACheeseHeistCharacter::SetInteractObject(AInteractActor* Object) {
 
 	TargetInteractObject = Object;
 
+}
+
+void ACheeseHeistCharacter::CollectObject(ECollectableType ObjectType, ACollectActor* Actor) {
+	
+	if (Actor == nullptr) { return; }
+
+	if (ObjectType == ECollectableType::CHEESEWHEEL) {
+
+		if (CheeseWheelsInBag + 1 > MaxCheeseWheelsInBag) {
+			UE_LOG(LogTemp, Warning, TEXT("[Collectable] Too many collected!"));
+			return;
+		}
+
+		CheeseWheelsInBag += 1;
+		UE_LOG(LogTemp, Warning, TEXT("[Collectable] Cheese Wheel collected! %i in bag"), CheeseWheelsInBag);
+	}
+
+	if (ObjectType == ECollectableType::CHEESESLICE) {
+
+		if (CheeseSlicesInBag + 1 > MaxCheeseSlicesInBag) {
+			UE_LOG(LogTemp, Warning, TEXT("[Collectable] Too many collected!"));
+			return;
+		}
+
+		CheeseSlicesInBag += 1;
+		UE_LOG(LogTemp, Warning, TEXT("[Collectable] Cheese Slice collected! % i in bag"), CheeseSlicesInBag);
+	}
+
+	if (ObjectType == ECollectableType::COLLECTABLE) {
+		CollectablesFound += 1;
+		UE_LOG(LogTemp, Warning, TEXT("[Collectable] Collectable found!"));
+	}
+
+	Actor->Destroy();
+
+}
+
+void ACheeseHeistCharacter::ThrowBag() {
+
+	if (BagObject == nullptr) { return; }
+
+	if ((CheeseWheelsInBag == 0) && (CheeseSlicesInBag == 0)) { return; }
+
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	SpawnInfo.bNoFail;
+
+	ABagObject* Object = GetWorld()->SpawnActor<ABagObject>(BagObject, FirstPersonCameraComponent->GetComponentLocation() - FVector(0,0,40) + (FirstPersonCameraComponent->GetForwardVector() * 100), this->GetActorRotation(), SpawnInfo);
+
+	//Object->StaticMesh->AddImpulseAtLocation(FirstPersonCameraComponent->GetForwardVector() * 15000.f, Object->GetActorLocation());
+	Object->SetContent(CheeseWheelsInBag, CheeseSlicesInBag);
+	Object->StaticMesh->AddForce(FirstPersonCameraComponent->GetForwardVector() * BagThrowForce * Object->StaticMesh->GetMass());
+
+	CheeseWheelsInBag -= CheeseWheelsInBag;
+	CheeseSlicesInBag -= CheeseSlicesInBag;
+
+}
+
+void ACheeseHeistCharacter::PickupBag(ABagObject* Bag) {
+
+	if (Bag == nullptr) { return; }
+	
+	FVector2D Contents = Bag->GetContent();
+	int Wheels = Contents.X;
+	int Slices = Contents.Y;
+
+	if ((CheeseWheelsInBag + Wheels > MaxCheeseWheelsInBag) || (CheeseSlicesInBag + Slices > MaxCheeseSlicesInBag)) {
+		// Notify the player
+
+		UE_LOG(LogTemp, Warning, TEXT("[Collectable] Contents exceed the capacity!"));
+		return; 
+	}
+
+	CheeseWheelsInBag += Wheels;
+	CheeseSlicesInBag += Slices;
+
+	Bag->Destroy();
 }

@@ -2,10 +2,7 @@
 
 
 #include "InteractActor.h"
-
-#include "Components/SkeletalMeshComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/BoxComponent.h"
 
 #include "CheeseHeistCharacter.h"
 #include "RatCharacter.h"
@@ -14,20 +11,10 @@
 AInteractActor::AInteractActor() {
 	PrimaryActorTick.bCanEverTick = false;
 
-	SkeletalMesh = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Skeletal Mesh"));
-	RootComponent = SkeletalMesh;
-
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
-	StaticMesh->SetupAttachment(RootComponent);
-
-	BoxComponent = CreateDefaultSubobject<UBoxComponent>(TEXT("Interact Box"));
-	BoxComponent->InitBoxExtent(FVector(10,10,10));
-	BoxComponent->SetCollisionProfileName("BlockAll");
-	BoxComponent->SetupAttachment(RootComponent);
+	RootComponent = StaticMesh;
 
 	bRatOnlyInteract = false;
-
-	bIsLocked = true;
 
 }
 
@@ -41,13 +28,9 @@ void AInteractActor::Tick(float DeltaTime) {
 
 }
 
-bool AInteractActor::GetLockStatus() {
+void AInteractActor::Interact() { // Function must be overwritten
 
-	return bIsLocked;
-
-}
-
-void AInteractActor::OnInteract(AActor* ObjectToUnlock) { // Function must be overwritten
+	UE_LOG(LogTemp, Warning, TEXT("[Interact] Object has not got Interact function!"));
 
 	return;
 
@@ -55,12 +38,4 @@ void AInteractActor::OnInteract(AActor* ObjectToUnlock) { // Function must be ov
 
 bool AInteractActor::GetCanInteract() {
 	return bRatOnlyInteract;
-}
-
-void AInteractActor::Unlock() {
-	bIsLocked = false;
-}
-
-void AInteractActor::Lock() {
-	bIsLocked = true;
 }
