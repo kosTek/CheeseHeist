@@ -181,6 +181,8 @@ void ACheeseHeistCharacter::StartRatThrow() {
 
 			PlayerController->UnPossess();
 			PlayerController->Possess(RatCharacter);
+
+			OnSwitchCharacter.Broadcast();
 		}
 	}
 }
@@ -199,6 +201,8 @@ void ACheeseHeistCharacter::ThrowRat() {
 
 		bHasRat = false;
 		bRatThrowAnimActive = false;
+
+		OnThrowRat.Broadcast();
 	}
 
 }
@@ -232,7 +236,9 @@ void ACheeseHeistCharacter::PickupRat() {
 	bRatPickupAnimActive = false;
 	bCanSwitch = true;
 	bHasRat = true;
-	return;
+
+	OnPickupRat.Broadcast();
+
 }
 
 void ACheeseHeistCharacter::Interact() {

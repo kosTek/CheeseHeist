@@ -24,6 +24,10 @@ struct FInputActionValue;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnSwitchCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnThrowRat);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPickupRat);
+
 UCLASS(config=Game)
 class ACheeseHeistCharacter : public ACharacter
 {
@@ -78,6 +82,12 @@ class ACheeseHeistCharacter : public ACharacter
 public:
 	ACheeseHeistCharacter();
 		
+	/* DELEGATES */
+	FOnSwitchCharacter OnSwitchCharacter;
+	FOnThrowRat OnThrowRat;
+	FOnPickupRat OnPickupRat;
+
+
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;

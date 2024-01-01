@@ -155,6 +155,7 @@ void ARatCharacter::SwitchToHuman() {
 		PlayerController->UnPossess();	
 		PlayerController->Possess(Human);
 
+		Human->OnSwitchCharacter.Broadcast();
 	}
 
 }

@@ -4,6 +4,8 @@
 #include "ObjectiveHandler.h"
 #include "ObjectiveInteractActor.h"
 #include "Objective.h"
+#include "HeistGamemode.h"
+#include "PlayerHUD.h"
 
 // Sets default values
 AObjectiveHandler::AObjectiveHandler() {
@@ -74,19 +76,23 @@ void AObjectiveHandler::Tick(float DeltaTime) {
 
 void AObjectiveHandler::NextObjective(){
 	if (CurrentObjectiveIndex + 1 > Objectives.Num() - 1) {
-		OnObjectivesFinished();
+		ObjectivesFinished();
 		return;
 	}
 
 	CurrentObjectiveIndex += 1;
 	Objectives[CurrentObjectiveIndex]->SpawnedActor->Unlock();
+
+	OnObjectiveFinished.Broadcast();
 }
 
-void AObjectiveHandler::OnObjectivesFinished() {
+void AObjectiveHandler::ObjectivesFinished() {
 
 	bObjectivesFinished = true;
 
-	UE_LOG(LogTemp, Warning, TEXT("[Objectives] All objectives finished. Escape unlocked!"))
+	OnAllObjectivesFinished.Broadcast();
+
+	UE_LOG(LogTemp, Warning, TEXT("[Objectives] All objectives finished. Escape unlocked!"));
 
 	return;
 }
@@ -107,5 +113,15 @@ UObjective* AObjectiveHandler::GetCurrentObjective() {
 	}
 
 	return Objectives[CurrentObjectiveIndex]; 
+
+}
+
+FString AObjectiveHandler::GetCurrentObjectiveText() {
+
+	if (bObjectivesFinished) {
+		return "Collect all the cheese and extract!";
+	}
+
+	return Objectives[CurrentObjectiveIndex]->ObjectiveDescription;
 
 }

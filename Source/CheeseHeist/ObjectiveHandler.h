@@ -11,6 +11,9 @@ class AObjectiveInteractActor;
 class AExtrationActor;
 class UObjective;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnObjectiveFinished);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAllObjectivesFinished);
+
 UCLASS()
 class CHEESEHEIST_API AObjectiveHandler : public AActor
 {
@@ -22,6 +25,12 @@ public:
 
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	/* DELEGATES */
+	FOnObjectiveFinished OnObjectiveFinished;
+
+	UPROPERTY()
+	FOnAllObjectivesFinished OnAllObjectivesFinished;
 
 	/** Objective list in order of required completion */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Objectives)
@@ -37,7 +46,7 @@ public:
 
 	/** Proceeds to give a final objective to the player to finish the level */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
-	void OnObjectivesFinished();
+	void ObjectivesFinished();
 
 	/** Returns the index of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
@@ -46,6 +55,10 @@ public:
 	/** Returns the structure of the current objective */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
 	UObjective* GetCurrentObjective();
+
+	/** Returns the description of the objective */
+	UFUNCTION(BlueprintCallable, Category = Objectives)
+	FString GetCurrentObjectiveText();
 
 	/** Returns the status of the objectives */
 	UFUNCTION(BlueprintCallable, Category = Objectives)
