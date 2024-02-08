@@ -7,9 +7,11 @@
 
 #include "CheeseHeistCharacter.h"
 #include "RatCharacter.h"
+#include "InteractActor.h"
 
 #include "Components/TextBlock.h"
 #include "Components/Image.h"
+#include "Components/CanvasPanel.h"
 
 UPlayerHUD::UPlayerHUD(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
 
@@ -21,6 +23,60 @@ UPlayerHUD::UPlayerHUD(const FObjectInitializer& ObjectInitializer) : Super(Obje
 		Player->OnSwitchCharacter.AddDynamic(this, &UPlayerHUD::OnCharacterSwitch);
 		Player->OnThrowRat.AddDynamic(this, &UPlayerHUD::OnThrowRat);
 		Player->OnPickupRat.AddDynamic(this, &UPlayerHUD::OnPickupRat);
+	}
+
+	bPlayerIsHuman = true;
+
+}
+
+void UPlayerHUD::NativeTick(const FGeometry& MyGeometry, float DeltaTime) {
+	Super::NativeTick(MyGeometry, DeltaTime);
+
+	if (bPlayerIsHuman) { // Make rat parent of human character to make this look nicer...
+		ACheeseHeistCharacter* PlayerHuman = Cast<ACheeseHeistCharacter>(Controller->GetPawn());
+
+		if (PlayerHuman) {
+
+			if (PlayerHuman->GetCanPickupRat()) {
+
+				InteractText->SetText(FText::FromString("Pick up the rat"));
+
+				InteractTextPanel->SetVisibility(ESlateVisibility::Visible);
+				return;
+			} else {
+				InteractTextPanel->SetVisibility(ESlateVisibility::Hidden);
+			}
+
+			AInteractActor* InteractableActor = PlayerHuman->GetTargetInteractObject();
+
+			if (InteractableActor != nullptr) {
+
+				InteractText->SetText(InteractableActor->InteractText);
+
+				InteractTextPanel->SetVisibility(ESlateVisibility::Visible);
+			} else {
+				InteractTextPanel->SetVisibility(ESlateVisibility::Hidden);
+			}
+		}
+
+	} else {
+		ARatCharacter* PlayerRat = Cast<ARatCharacter>(Controller->GetPawn());
+
+		if (PlayerRat) {
+
+			AInteractActor* InteractableActor = PlayerRat->GetTargetInteractObject();
+
+			if (InteractableActor != nullptr) {
+
+				InteractText->SetText(InteractableActor->InteractText);
+
+				InteractTextPanel->SetVisibility(ESlateVisibility::Visible);
+			} else {
+				InteractTextPanel->SetVisibility(ESlateVisibility::Hidden);
+			}
+
+		}
+
 	}
 
 }
@@ -37,9 +93,13 @@ void UPlayerHUD::OnCharacterSwitch() {
 
 	if (Cast<ACheeseHeistCharacter>(Controller->GetPawn()) != nullptr) {
 		SwitchAbilityImage->SetBrushFromTexture(SwitchToRatTexture);
+		bPlayerIsHuman = true;
+		Crosshair->SetVisibility(ESlateVisibility::Visible);
 
 	} else if (Cast<ARatCharacter>(Controller->GetPawn()) != nullptr) {
 		SwitchAbilityImage->SetBrushFromTexture(SwitchToHumanTexture);
+		bPlayerIsHuman = false;
+		Crosshair->SetVisibility(ESlateVisibility::Hidden);
 
 	}
 

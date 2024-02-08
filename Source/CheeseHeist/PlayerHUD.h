@@ -18,9 +18,12 @@ class CHEESEHEIST_API UPlayerHUD : public UUserWidget
 	
 	UPlayerHUD(const FObjectInitializer& ObjectInitializer);
 
-	// Objectives
+	
 public:
 
+	void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
+
+	// Objectives
 	UFUNCTION(BlueprintCallable)
 	void SetObjectiveText(FString Text);
 
@@ -28,6 +31,10 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* ObjectiveText;
 	
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* Crosshair;
+
+	/* Switching Characters */
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UImage* SwitchAbilityImage;
 
@@ -39,6 +46,24 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = Images)
 	UTexture2D* SwitchToRatTexture;
+
+	/* END Switching Characters */
+
+	/* Interact Text */
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	class UCanvasPanel* InteractTextPanel;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UTextBlock* InteractText;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UImage* InteractIcon;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UTextBlock* InteractKeyText;
+
+	/* END Interact Text */
 
 private:
 
@@ -54,5 +79,7 @@ private:
 	UFUNCTION()
 	void OnPickupRat();
 
+	UPROPERTY()
+	bool bPlayerIsHuman;
 
 };

@@ -35,6 +35,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Interactable)
 	bool GetCanInteract();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
+	FText InteractText;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

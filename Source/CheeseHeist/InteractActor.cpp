@@ -16,6 +16,8 @@ AInteractActor::AInteractActor() {
 
 	bRatOnlyInteract = false;
 
+	InteractText = FText::FromString("Object Text Here");
+
 }
 
 void AInteractActor::BeginPlay() {

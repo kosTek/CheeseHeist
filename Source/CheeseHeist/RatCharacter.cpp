@@ -65,10 +65,8 @@ void ARatCharacter::BeginPlay() {
 	Super::BeginPlay();
 
 	//Add Input Mapping Context
-	if (APlayerController* PlayerController = Cast<APlayerController>(Controller))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
-		{
+	if (APlayerController* PlayerController = Cast<APlayerController>(Controller)){
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer())){
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
@@ -175,7 +173,7 @@ void ARatCharacter::InteractTrace() {
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(this);
 
-	DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
+	//DrawDebugLine(GetWorld(), StartVector, EndVector, FColor::Blue, false, 1, 0, 1);
 
 	bool GotHit = GetWorld()->LineTraceSingleByChannel(HitResult, StartVector, EndVector, ECC_Visibility, CollisionParams);
 

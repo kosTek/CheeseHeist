@@ -112,6 +112,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = Interactable)
 	AInteractActor* GetTargetInteractObject() { return TargetInteractObject; };
 
+	UFUNCTION(BlueprintCallable, Category = Interactable)
+	bool GetCanPickupRat() { return bCanPickupRat; };
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Interactable)
 	float InteractionRange;
 
