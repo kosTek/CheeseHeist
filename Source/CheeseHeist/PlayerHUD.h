@@ -10,6 +10,7 @@
 class UTextBlock;
 class UImage;
 class UTexture2D;
+class UCanvasPanel;
 
 UCLASS()
 class CHEESEHEIST_API UPlayerHUD : public UUserWidget
@@ -52,7 +53,7 @@ public:
 	/* Interact Text */
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
-	class UCanvasPanel* InteractTextPanel;
+	UCanvasPanel* InteractTextPanel;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UTextBlock* InteractText;
