@@ -12,22 +12,8 @@ class UTexture2D;
 class UCanvasPanel;
 class UButton;
 class UHorizontalBox;
-
-USTRUCT(BlueprintType)
-struct FLevelStruct {
-
-	GENERATED_USTRUCT_BODY();
-
-public:
-	/* Name of the level used by the engine to load */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LevelDefinition)
-	FString LevelName;
-
-	/* Name displayed to the player */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LevelDefinition)
-	FString MapName;
-
-};
+class ULevelWidget;
+class ULevelList;
 
 UCLASS()
 class CHEESEHEIST_API UMainMenuWidget : public UUserWidget
@@ -44,6 +30,9 @@ public:
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UCanvasPanel* MainMenuPanel;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UCanvasPanel* ChooseLevelPanel;
 
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UButton* ChooseLevelButton;
@@ -72,16 +61,19 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UHorizontalBox* LevelHorizontalPanel;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ULevelWidget> LevelPanel;
+
 	/* END Main Menu Panel */
 
 	UPROPERTY(EditAnywhere)
-	TArray<FLevelStruct> Levels;
+	TSubclassOf<ULevelList> Levels;
 
 private:
 
 	void ChangeHoverState(UButton* Button, bool State);
 
 	UFUNCTION(BlueprintCallable)
-	void CreateLevelWidgets(TArray<FLevelStruct> LevelArray);
+	void CreateLevelWidgets();
 
 };

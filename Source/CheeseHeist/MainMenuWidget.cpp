@@ -8,28 +8,19 @@
 #include "Components/CanvasPanel.h"
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
+#include "Components/HorizontalBoxSlot.h"
+#include "Components/PanelSlot.h"
 
 #include "Styling/SlateColor.h"
 
 #include "LevelWidget.h"
+#include "LevelList.h"
 
 UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
-	
-	UE_LOG(LogTemp, Warning, TEXT("%i"), Levels.Num());
 
-	for (int i = 0; i < Levels.Num(); i++) {
+	//GetWidgetFromName(FName("HorizontalBox_62"))
 
-		ULevelWidget* Widget = CreateWidget<ULevelWidget>(this, ULevelWidget::StaticClass());
-		Widget->LevelText->SetText(FText::FromString(Levels[i].MapName));
-		Widget->WidgetIndex = i;
-
-		LevelHorizontalPanel->AddChild(Widget);
-
-		Widget->SetPadding(FMargin(40.f, 0.f, 0.f, 0.f));
-
-		UE_LOG(LogTemp, Warning, TEXT("%i Processed"), i);
-
-	}
+	return;
 
 }
 
@@ -82,9 +73,27 @@ void UMainMenuWidget::ChangeHoverState(UButton* Button, bool State) {
 
 }
 
-void UMainMenuWidget::CreateLevelWidgets(TArray<FLevelStruct> LevelArray) {
-	Levels = LevelArray;
+void UMainMenuWidget::CreateLevelWidgets() {
 
-	
+	if (Levels == nullptr) { return; }
+	if (LevelPanel == nullptr) { return; }
+
+	TArray<FLevelStruct> LevelArray = Levels.GetDefaultObject()->List;
+
+	for (int i = 0; i < LevelArray.Num(); i++) {
+
+		ULevelWidget* ShowcaseWidget = CreateWidget<ULevelWidget>(this, LevelPanel);
+		ShowcaseWidget->LevelText->SetText(FText::FromString(LevelArray[i].MapName));
+		ShowcaseWidget->WidgetIndex = i;
+		ShowcaseWidget->SetPadding(FMargin(40.f, 0.f, 0.f, 0.f));
+		
+		UPanelSlot* PanelSlot = LevelHorizontalPanel->AddChild(ShowcaseWidget);
+
+		if (UHorizontalBoxSlot* HorSlot = Cast<UHorizontalBoxSlot>(PanelSlot)) {
+			HorSlot->SetHorizontalAlignment(EHorizontalAlignment::HAlign_Center);
+			HorSlot->SetVerticalAlignment(EVerticalAlignment::VAlign_Center);
+		}
+
+	}
 
 }
