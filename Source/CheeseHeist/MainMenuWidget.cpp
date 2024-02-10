@@ -88,12 +88,16 @@ void UMainMenuWidget::ChangeHoverState(UButton* Button, bool State) {
 
 void UMainMenuWidget::CreateLevelWidgets() {
 
+	UE_LOG(LogTemp, Warning, TEXT("srht"));
+
 	if (Levels == nullptr) { return; }
 	if (LevelPanel == nullptr) { return; }
 
 	TArray<FLevelStruct> LevelArray = Levels.GetDefaultObject()->List;
 
 	for (int i = 0; i < LevelArray.Num(); i++) {
+
+		UE_LOG(LogTemp, Warning, TEXT("ifsgjnd"));
 
 		ULevelWidget* ShowcaseWidget = CreateWidget<ULevelWidget>(this, LevelPanel);
 		ShowcaseWidget->LevelText->SetText(FText::FromString(LevelArray[i].MapName));
