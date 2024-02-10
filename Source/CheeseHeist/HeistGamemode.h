@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Enumerations.h"
 #include "HeistGamemode.generated.h"
 
 class ACheeseHeistCharacter;
 class AObjectiveHandler;
 
 class UPlayerHUD;
-
 
 UCLASS()
 class CHEESEHEIST_API AHeistGamemode : public AGameModeBase
@@ -28,6 +28,9 @@ public:
 	UPROPERTY(VisibleAnywhere, Category = HUD)
 	UPlayerHUD* HUD;
 
+	UFUNCTION(BlueprintCallable)
+	void ChangeCheeseStored(ECollectableType Type , int Value);
+
 private:
 
 	UPROPERTY()
@@ -41,5 +44,20 @@ private:
 
 	UFUNCTION()
 	void OnAllObjectivesFinished();
+
+	UPROPERTY()
+	int CheeseWheelsOnMap;
+
+	UPROPERTY()
+	int CheeseSlicesOnMap;
+
+	UPROPERTY()
+	int CheeseWheelsStored;
+
+	UPROPERTY()
+	int CheeseSlicesStored;
+
+	UFUNCTION()
+	void GetAllCheeseOnMap();
 
 };
