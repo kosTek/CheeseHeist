@@ -14,7 +14,7 @@ struct FLevelStruct {
 public:
 	/* Name of the level used by the engine to load */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LevelDefinition)
-	FString LevelName;
+	FName LevelName;
 
 	/* Name displayed to the player */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = LevelDefinition)

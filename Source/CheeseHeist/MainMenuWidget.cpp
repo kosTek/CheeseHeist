@@ -9,6 +9,7 @@
 #include "Components/Button.h"
 #include "Components/HorizontalBox.h"
 #include "Components/HorizontalBoxSlot.h"
+#include "Components/ScrollBox.h"
 #include "Components/PanelSlot.h"
 
 #include "Styling/SlateColor.h"
@@ -16,11 +17,17 @@
 #include "LevelWidget.h"
 #include "LevelList.h"
 
-UMainMenuWidget::UMainMenuWidget(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer) {
+
+void UMainMenuWidget::NativeConstruct() {
+	Super::NativeConstruct();
 
 	//GetWidgetFromName(FName("HorizontalBox_62"))
 
-	return;
+	ChooseLevelButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnChooseLevelClicked);
+	GalleryButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnGalleryClicked);
+	OptionsButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnOptionsClicked);
+	ExitButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnExitClicked);
+	BackButton->OnClicked.AddDynamic(this, &UMainMenuWidget::OnBackClicked);
 
 }
 
@@ -49,6 +56,12 @@ void UMainMenuWidget::NativeTick(const FGeometry& MyGeometry, float DeltaTime) {
 		ChangeHoverState(ExitButton, true);
 	} else {
 		ChangeHoverState(ExitButton, false);
+	}
+
+	if (BackButton->IsHovered()) {
+		ChangeHoverState(BackButton, true);
+	} else {
+		ChangeHoverState(BackButton, false);
 	}
 
 }
@@ -84,9 +97,11 @@ void UMainMenuWidget::CreateLevelWidgets() {
 
 		ULevelWidget* ShowcaseWidget = CreateWidget<ULevelWidget>(this, LevelPanel);
 		ShowcaseWidget->LevelText->SetText(FText::FromString(LevelArray[i].MapName));
-		ShowcaseWidget->WidgetIndex = i;
+		ShowcaseWidget->LevelName = LevelArray[i].LevelName;
 		ShowcaseWidget->SetPadding(FMargin(40.f, 0.f, 0.f, 0.f));
 		
+		//UScrollBox* ScrollBox = Cast<UScrollBox>(GetWidgetFromName(FName("HorizontalScrollBox")));
+
 		UPanelSlot* PanelSlot = LevelHorizontalPanel->AddChild(ShowcaseWidget);
 
 		if (UHorizontalBoxSlot* HorSlot = Cast<UHorizontalBoxSlot>(PanelSlot)) {
@@ -95,5 +110,41 @@ void UMainMenuWidget::CreateLevelWidgets() {
 		}
 
 	}
+
+}
+
+void UMainMenuWidget::OnBackClicked() {
+
+	MainMenuPanel->SetVisibility(ESlateVisibility::Visible);
+	BackButton->SetVisibility(ESlateVisibility::Hidden);
+
+	// Hide all panels
+	ChooseLevelPanel->SetVisibility(ESlateVisibility::Hidden);
+
+}
+
+void UMainMenuWidget::OnChooseLevelClicked() {
+
+	MainMenuPanel->SetVisibility(ESlateVisibility::Hidden);
+	ChooseLevelPanel->SetVisibility(ESlateVisibility::Visible);
+	BackButton->SetVisibility(ESlateVisibility::Visible);
+
+}
+
+void UMainMenuWidget::OnGalleryClicked() {
+
+	// Lead to gallery screen for player collectables
+
+}
+
+void UMainMenuWidget::OnOptionsClicked() {
+
+	// Lead to options tab
+
+}
+
+void UMainMenuWidget::OnExitClicked() {
+
+	FGenericPlatformMisc::RequestExit(false);
 
 }

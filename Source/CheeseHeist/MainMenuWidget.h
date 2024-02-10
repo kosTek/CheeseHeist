@@ -19,10 +19,10 @@ UCLASS()
 class CHEESEHEIST_API UMainMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
-	UMainMenuWidget(const FObjectInitializer& ObjectInitializer);
 
 public:
+
+	virtual void NativeConstruct() override;
 
 	void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
@@ -61,6 +61,12 @@ public:
 	UPROPERTY(EditAnywhere, meta = (BindWidget))
 	UHorizontalBox* LevelHorizontalPanel;
 
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UButton* BackButton;
+
+	UPROPERTY(EditAnywhere, meta = (BindWidget))
+	UTextBlock* BackButtonText;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ULevelWidget> LevelPanel;
 
@@ -75,5 +81,24 @@ private:
 
 	UFUNCTION(BlueprintCallable)
 	void CreateLevelWidgets();
+
+	/* Button Implementation */
+
+	UFUNCTION()
+	void OnBackClicked();
+
+	UFUNCTION()
+	void OnChooseLevelClicked();
+
+	UFUNCTION()
+	void OnGalleryClicked();
+
+	UFUNCTION()
+	void OnOptionsClicked();
+
+	UFUNCTION()
+	void OnExitClicked();
+
+	/* END Button Implementation */
 
 };

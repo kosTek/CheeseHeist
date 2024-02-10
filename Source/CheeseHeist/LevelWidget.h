@@ -14,10 +14,10 @@ UCLASS()
 class CHEESEHEIST_API ULevelWidget : public UUserWidget
 {
 	GENERATED_BODY()
-	
-	ULevelWidget(const FObjectInitializer& ObjectInitializer);
 
 public:
+
+	virtual void NativeConstruct() override;
 
 	void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
 
@@ -34,6 +34,13 @@ public:
 	UTextBlock* LevelText;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int WidgetIndex;
+	FName LevelName;
+
+	UFUNCTION()
+	void LevelSelected();
+
+private:
+
+	void ChangeHoverState(UButton* Button, bool State);
 
 };
